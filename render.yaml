@@ -1,0 +1,6 @@
+
+services:
+  - type: web
+    name: facial-php-flask
+    env: docker
+    dockerfilePath: ./Dockerfile
