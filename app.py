@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, UserMixin, current_user
@@ -21,8 +20,8 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@app.before_first_request
-def create_tables():
+# ✅ Criação segura das tabelas para produção (como Render)
+with app.app_context():
     db.create_all()
 
 @app.route('/')
