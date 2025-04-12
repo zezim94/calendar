@@ -9,7 +9,10 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'supersecretkey'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///calendar.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    "DATABASE_URL", 
+    "postgresql://adm:bdunwFc6lvwAotvqDdKvRX4eDjHspy4a@dpg-cvskeq9r0fns73cbad20-a.oregon-postgres.render.com/facialdb_fj3i"
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -18,11 +21,12 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))  # compatível com PostgreSQL e SQLAlchemy 2
 
-# ✅ Criação segura das tabelas para produção (como Render)
-with app.app_context():
-    db.create_all()
+@app.before_request
+def create_tables():
+    with app.app_context():
+        db.create_all()
 
 @app.route('/')
 @login_required
